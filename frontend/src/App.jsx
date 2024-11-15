@@ -1,7 +1,7 @@
 import { useState, useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setBlogs, appendBlog, removeBlog } from './reducers/blogReducer';
+import { setBlogs, appendBlog, removeBlog, likeBlog } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 
 import blogService from './services/blogs';
@@ -66,9 +66,8 @@ const App = () => {
       ...blog,
       likes: blog.likes + 1
     });
-
     notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b));
+    dispatch(likeBlog(updatedBlog));
   };
 
   const handleLogout = () => {
