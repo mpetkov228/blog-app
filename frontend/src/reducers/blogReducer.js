@@ -9,10 +9,14 @@ const blogSlice = createSlice({
     },
     appendBlog(state, action) {
       state.push(action.payload);
+    },
+    removeBlog(state, action) {
+      const blog = action.payload;
+      return state.filter(b => b.id !== blog.id);
     }
   }
 });
 
-export const { setBlogs, appendBlog } = blogSlice.actions;
+export const { setBlogs, appendBlog, removeBlog } = blogSlice.actions;
 
 export default blogSlice.reducer;

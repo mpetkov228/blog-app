@@ -1,7 +1,7 @@
 import { useState, useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setBlogs, appendBlog } from './reducers/blogReducer';
+import { setBlogs, appendBlog, removeBlog } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 
 import blogService from './services/blogs';
@@ -80,7 +80,7 @@ const App = () => {
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id);
-      setBlogs(blogs.filter(b => b.id !== blog.id));
+      dispatch(removeBlog(blog));
       notify(`Blog ${blog.title}, by ${blog.author} removed`);
     }
   };
