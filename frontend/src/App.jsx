@@ -1,6 +1,7 @@
 import { useState, useEffect, createRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { setBlogs, appendBlog } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 
 import blogService from './services/blogs';
@@ -15,14 +16,15 @@ import Togglable from './components/Togglable';
 const App = () => {
   const dispatch = useDispatch();
 
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+    blogService.getAll().then(blog =>
+      dispatch(setBlogs(blog))
     );
   }, []);
+
+  const blogs = useSelector(state => state.blog);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -53,7 +55,7 @@ const App = () => {
 
   const handleCreate = async (blog) => {
     const newBlog = await blogService.create(blog);
-    setBlogs(blogs.concat(newBlog));
+    dispatch(appendBlog(newBlog));
     notify(`Blog created: ${newBlog.title}, ${newBlog.author}`);
     blogFormRef.current.toggleVisibility();
   };
@@ -108,7 +110,7 @@ const App = () => {
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {blogs.sort(byLikes).map(blog =>
+      {[...blogs].sort(byLikes).map(blog =>
         <Blog
           key={blog.id}
           blog={blog}
