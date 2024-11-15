@@ -1,4 +1,7 @@
 import { useState, useEffect, createRef } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { hideNotification, showNotification } from './reducers/notificationReducer';
 
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -10,9 +13,10 @@ import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 
 const App = () => {
+  const dispatch = useDispatch();
+
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -23,16 +27,16 @@ const App = () => {
   useEffect(() => {
     const user = storage.loadUser();
     if (user) {
-      setUser(user)
+      setUser(user);
     }
   }, []);
 
   const blogFormRef = createRef();
 
   const notify = (message, type = 'success') => {
-    setNotification({ message, type });
+    dispatch(showNotification(message));
     setTimeout(() => {
-      setNotification(null)
+      dispatch(hideNotification());
     }, 5000);
   };
 
@@ -83,7 +87,7 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
-        <Notification notification={notification} />
+        <Notification />
         <Login doLogin={handleLogin} />
       </div>
     );
@@ -94,7 +98,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification notification={notification} />
+      <Notification />
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>
