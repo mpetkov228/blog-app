@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setBlogs, appendBlog, removeBlog, likeBlog } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
+import { setUser, clearUser } from './reducers/userReducer';
 
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -16,7 +17,8 @@ import Togglable from './components/Togglable';
 const App = () => {
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const blogs = useSelector(state => state.blog);
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     blogService.getAll().then(blog =>
@@ -24,12 +26,11 @@ const App = () => {
     );
   }, []);
 
-  const blogs = useSelector(state => state.blog);
-
   useEffect(() => {
     const user = storage.loadUser();
+    console.log(user);
     if (user) {
-      setUser(user);
+      dispatch(setUser(user));
     }
   }, []);
 
@@ -45,7 +46,7 @@ const App = () => {
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials);
-      setUser(user);
+      dispatch(setUser(user));
       storage.saveUser(user);
       notify(`Welcome back, ${user.name}`);
     } catch (error) {
@@ -71,7 +72,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
+    dispatch(clearUser());
     storage.removeUser();
     notify(`Bye, ${user.name}!`);
   };
