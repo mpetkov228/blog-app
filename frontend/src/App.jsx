@@ -1,4 +1,6 @@
-import { useState, useEffect, createRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+import { useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setBlogs, appendBlog, removeBlog, likeBlog } from './reducers/blogReducer';
@@ -13,18 +15,12 @@ import Blog from './components/Blog';
 import NewBlog from './components/NewBlog';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import Home from './components/Home';
 
 const App = () => {
   const dispatch = useDispatch();
 
-  const blogs = useSelector(state => state.blog);
   const user = useSelector(state => state.user);
-
-  useEffect(() => {
-    blogService.getAll().then(blog =>
-      dispatch(setBlogs(blog))
-    );
-  }, []);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -54,35 +50,17 @@ const App = () => {
     }
   };
 
-  const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog);
-    dispatch(appendBlog(newBlog));
-    notify(`Blog created: ${newBlog.title}, ${newBlog.author}`);
-    blogFormRef.current.toggleVisibility();
-  };
-
-  const handleVote = async (blog) => {
-    console.log('updating', blog);
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1
-    });
-    notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
-    dispatch(likeBlog(updatedBlog));
-  };
-
   const handleLogout = () => {
     dispatch(clearUser());
     storage.removeUser();
     notify(`Bye, ${user.name}!`);
   };
 
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id);
-      dispatch(removeBlog(blog));
-      notify(`Blog ${blog.title}, by ${blog.author} removed`);
-    }
+  const handleCreate = async (blog) => {
+    const newBlog = await blogService.create(blog);
+    dispatch(appendBlog(newBlog));
+    notify(`Blog created: ${newBlog.title}, ${newBlog.author}`);
+    blogFormRef.current.toggleVisibility();
   };
 
   if (!user) {
@@ -95,8 +73,6 @@ const App = () => {
     );
   }
 
-  const byLikes = (a, b) => b.likes - a.likes;
-
   return (
     <div>
       <h2>blogs</h2>
@@ -107,17 +83,17 @@ const App = () => {
           logout
         </button>
       </div>
+
+      <Router>
+        <Routes>
+          <Route path="/users" element={<div>users</div>} />
+          <Route path="/" element={<Home notify={notify} />} />
+        </Routes>
+      </Router>
+
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <NewBlog doCreate={handleCreate} />
       </Togglable>
-      {[...blogs].sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      )}
     </div>
   );
 };
