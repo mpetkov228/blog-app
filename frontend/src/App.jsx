@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setBlogs, appendBlog, removeBlog, likeBlog } from './reducers/blogReducer';
+import { appendBlog } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 import { setUser, clearUser } from './reducers/userReducer';
 
@@ -11,11 +11,11 @@ import blogService from './services/blogs';
 import loginService from './services/login';
 import storage from './services/storage';
 import Login from './components/Login';
-import Blog from './components/Blog';
 import NewBlog from './components/NewBlog';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import Home from './components/Home';
+import Users from './components/Users';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -86,7 +86,7 @@ const App = () => {
 
       <Router>
         <Routes>
-          <Route path="/users" element={<div>users</div>} />
+          <Route path="/users" element={<Users />} />
           <Route path="/" element={<Home notify={notify} />} />
         </Routes>
       </Router>
