@@ -16,11 +16,13 @@ import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import Home from './components/Home';
 import Users from './components/Users';
+import User from './components/User';
 
 const App = () => {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
+  const users = useSelector(state => state.users);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -87,6 +89,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User users={users} />} />
           <Route path="/" element={<Home notify={notify} />} />
         </Routes>
       </Router>
