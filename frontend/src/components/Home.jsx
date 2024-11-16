@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { likeBlog, removeBlog, setBlogs } from '../reducers/blogReducer';
+import { removeBlog, setBlogs } from '../reducers/blogReducer';
 import blogService from '../services/blogs';
 
-import Blog from './Blog';
 
 const Home = ({ notify }) => {
   const blogs = useSelector(state => state.blog);
@@ -17,16 +17,6 @@ const Home = ({ notify }) => {
     );
   }, []);
 
-  const handleVote = async (blog) => {
-    console.log('updating', blog);
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1
-    });
-    notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
-    dispatch(likeBlog(updatedBlog));
-  };
-
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id);
@@ -37,15 +27,19 @@ const Home = ({ notify }) => {
 
   const byLikes = (a, b) => b.likes - a.likes;
 
+  const style = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1,
+    marginBottom: 5,
+  };
+
   return (
-    <div>
+    <div className="blog">
       {[...blogs].sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
+        <div key={blog.id} style={style}>
+          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+        </div>
       )}
     </div>
   );

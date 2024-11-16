@@ -17,12 +17,14 @@ import Togglable from './components/Togglable';
 import Home from './components/Home';
 import Users from './components/Users';
 import User from './components/User';
+import Blog from './components/Blog';
 
 const App = () => {
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
   const users = useSelector(state => state.users);
+  const blogs = useSelector(state => state.blog);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -88,8 +90,9 @@ const App = () => {
 
       <Router>
         <Routes>
-          <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<User users={users} />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/blogs/:id" element={<Blog blogs={blogs} notify={notify} />} />
           <Route path="/" element={<Home notify={notify} />} />
         </Routes>
       </Router>
