@@ -1,20 +1,8 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import userService from '../services/users';
-import { setUsers } from '../reducers/usersReducer';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const Users = () => {
-  const dispatch = useDispatch();
-
   const users = useSelector(state => state.users);
-
-  useEffect(() => {
-    userService.getAll().then(users => {
-      dispatch(setUsers(users));
-    });
-  }, []);
 
   return (
     <div>

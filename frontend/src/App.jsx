@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useEffect, createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { appendBlog } from './reducers/blogReducer';
+import { appendBlog, setBlogs } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 import { setUser, clearUser } from './reducers/userReducer';
+import { setUsers } from './reducers/usersReducer';
 
 import blogService from './services/blogs';
 import loginService from './services/login';
+import userService from './services/users';
 import storage from './services/storage';
 import Login from './components/Login';
 import NewBlog from './components/NewBlog';
@@ -32,6 +34,18 @@ const App = () => {
     if (user) {
       dispatch(setUser(user));
     }
+  }, []);
+
+  useEffect(() => {
+    blogService.getAll().then(blog =>
+      dispatch(setBlogs(blog))
+    );
+  }, []);
+
+  useEffect(() => {
+    userService.getAll().then(users => {
+      dispatch(setUsers(users));
+    });
   }, []);
 
   const blogFormRef = createRef();

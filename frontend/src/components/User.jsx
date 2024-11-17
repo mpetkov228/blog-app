@@ -5,7 +5,7 @@ const User = ({ users }) => {
   const user = users.find(user => user.id === id);
 
   if (!user) {
-    return null;
+    return <div>Loading...</div>;
   }
 
   return (

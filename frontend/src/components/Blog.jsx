@@ -10,6 +10,10 @@ const Blog = ({ blogs, notify }) => {
   const id = useParams().id;
   const blog = blogs.find(b => b.id === id);
 
+  if (!blog) {
+    return <div>Loading...</div>;
+  }
+
   const nameOfUser = blog.user ? blog.user.name : 'anonymous';
 
   const canRemove = blog.user ? blog.user.username === storage.me() : true;

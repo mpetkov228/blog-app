@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { removeBlog, setBlogs } from '../reducers/blogReducer';
+import { removeBlog } from '../reducers/blogReducer';
 import blogService from '../services/blogs';
 
 
@@ -10,12 +9,6 @@ const Home = ({ notify }) => {
   const blogs = useSelector(state => state.blog);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    blogService.getAll().then(blog =>
-      dispatch(setBlogs(blog))
-    );
-  }, []);
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
