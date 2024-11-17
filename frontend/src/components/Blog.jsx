@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import storage from '../services/storage';
-import { likeBlog } from '../reducers/blogReducer';
+import { likeBlog, removeBlog } from '../reducers/blogReducer';
 import blogService from '../services/blogs';
 
 const Blog = ({ blogs, notify }) => {
@@ -28,6 +28,14 @@ const Blog = ({ blogs, notify }) => {
     });
     notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
     dispatch(likeBlog(updatedBlog));
+  };
+
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.remove(blog.id);
+      dispatch(removeBlog(blog));
+      notify(`Blog ${blog.title}, by ${blog.author} removed`);
+    }
   };
 
   return (

@@ -1,8 +1,11 @@
+import { createRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { removeBlog } from '../reducers/blogReducer';
+import { appendBlog } from '../reducers/blogReducer';
 import blogService from '../services/blogs';
+import Togglable from './Togglable';
+import NewBlog from './NewBlog';
 
 
 const Home = ({ notify }) => {
@@ -10,12 +13,13 @@ const Home = ({ notify }) => {
 
   const dispatch = useDispatch();
 
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id);
-      dispatch(removeBlog(blog));
-      notify(`Blog ${blog.title}, by ${blog.author} removed`);
-    }
+  const blogFormRef = createRef();
+
+  const handleCreate = async (blog) => {
+    const newBlog = await blogService.create(blog);
+    dispatch(appendBlog(newBlog));
+    notify(`Blog created: ${newBlog.title}, ${newBlog.author}`);
+    blogFormRef.current.toggleVisibility();
   };
 
   const byLikes = (a, b) => b.likes - a.likes;
@@ -29,6 +33,9 @@ const Home = ({ notify }) => {
 
   return (
     <div className="blog">
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+        <NewBlog doCreate={handleCreate} />
+      </Togglable>
       {[...blogs].sort(byLikes).map(blog =>
         <div key={blog.id} style={style}>
           <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>

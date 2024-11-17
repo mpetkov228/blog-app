@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-import { useEffect, createRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { appendBlog, setBlogs } from './reducers/blogReducer';
+import { setBlogs } from './reducers/blogReducer';
 import { hideNotification, showNotification } from './reducers/notificationReducer';
 import { setUser, clearUser } from './reducers/userReducer';
 import { setUsers } from './reducers/usersReducer';
@@ -13,9 +13,7 @@ import loginService from './services/login';
 import userService from './services/users';
 import storage from './services/storage';
 import Login from './components/Login';
-import NewBlog from './components/NewBlog';
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
 import Home from './components/Home';
 import Users from './components/Users';
 import User from './components/User';
@@ -34,21 +32,23 @@ const App = () => {
     if (user) {
       dispatch(setUser(user));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     blogService.getAll().then(blog =>
       dispatch(setBlogs(blog))
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     userService.getAll().then(users => {
       dispatch(setUsers(users));
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const blogFormRef = createRef();
 
   const notify = (message, type = 'success') => {
     dispatch(showNotification(message));
@@ -74,13 +74,6 @@ const App = () => {
     notify(`Bye, ${user.name}!`);
   };
 
-  const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog);
-    dispatch(appendBlog(newBlog));
-    notify(`Blog created: ${newBlog.title}, ${newBlog.author}`);
-    blogFormRef.current.toggleVisibility();
-  };
-
   if (!user) {
     return (
       <div>
@@ -91,18 +84,29 @@ const App = () => {
     );
   }
 
+  const padding = {
+    paddingRight: 5
+  };
+
+  const background = {
+    backgroundColor: 'lightgray',
+    padding: '3px 6px'
+  };
+
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification />
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>
-          logout
-        </button>
-      </div>
-
       <Router>
+        <div style={background}>
+          <Link style={padding} to="/">blogs</Link>
+          <Link style={padding} to="/users">users</Link>
+          {user.name} logged in
+          <button onClick={handleLogout}>
+            logout
+          </button>
+        </div>
+        <h2>blogs app</h2>
+        <Notification />
+
         <Routes>
           <Route path="/users/:id" element={<User users={users} />} />
           <Route path="/users" element={<Users />} />
@@ -110,10 +114,6 @@ const App = () => {
           <Route path="/" element={<Home notify={notify} />} />
         </Routes>
       </Router>
-
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
-      </Togglable>
     </div>
   );
 };
