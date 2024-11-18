@@ -38,6 +38,8 @@ const Blog = ({ blogs, notify }) => {
     }
   };
 
+  console.log(blog.comments);
+
   return (
     <div className='blog'>
       <h2>{blog.title}</h2>
@@ -46,6 +48,13 @@ const Blog = ({ blogs, notify }) => {
         {blog.likes} likes <button onClick={() => handleVote(blog)}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
+
+      <h2>comments</h2>
+      <ul>
+        {blog.comments.map(comment =>
+          <li key={comment.id}>{comment.content}</li>
+        )}
+      </ul>
     </div>
   );
 };
