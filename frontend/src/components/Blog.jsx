@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+
 import storage from '../services/storage';
 import { likeBlog, removeBlog } from '../reducers/blogReducer';
 import blogService from '../services/blogs';
 
-const Blog = ({ blogs, notify }) => {
+const Blog = ({ blogs, notify, doCreate }) => {
+  const [comment, setComment] = useState('');
+
   const dispatch = useDispatch();
 
   const id = useParams().id;
@@ -38,7 +42,11 @@ const Blog = ({ blogs, notify }) => {
     }
   };
 
-  console.log(blog.comments);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    doCreate(id, { content: comment });
+    setComment('');
+  };
 
   return (
     <div className='blog'>
@@ -55,6 +63,15 @@ const Blog = ({ blogs, notify }) => {
           <li key={comment.id}>{comment.content}</li>
         )}
       </ul>
+
+      <form onSubmit={handleSubmit}>
+        <h3>post a comment</h3>
+        <textarea
+          value={comment}
+          onChange={(event) => setComment(event.target.value)}
+        />
+        <button type="submit">post</button>
+      </form>
     </div>
   );
 };

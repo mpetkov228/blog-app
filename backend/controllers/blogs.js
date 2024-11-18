@@ -44,7 +44,7 @@ router.get('/:id/comments', async (request, response) => {
 
 router.post('/:id/comments', async (request, response) => {
   const blog = await Blog.findById(request.params.id);
-
+  console.log(request.body);
   const comment = new Comment(request.body);
 
   comment.blog = blog;

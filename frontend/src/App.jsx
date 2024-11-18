@@ -11,6 +11,7 @@ import { setUsers } from './reducers/usersReducer';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import userService from './services/users';
+import commentService from './services/comments';
 import storage from './services/storage';
 import Login from './components/Login';
 import Notification from './components/Notification';
@@ -74,6 +75,10 @@ const App = () => {
     notify(`Bye, ${user.name}!`);
   };
 
+  const handleCreate = async (id, comment) => {
+    await commentService.create(id, comment);
+  };
+
   if (!user) {
     return (
       <div>
@@ -110,7 +115,7 @@ const App = () => {
         <Routes>
           <Route path="/users/:id" element={<User users={users} />} />
           <Route path="/users" element={<Users />} />
-          <Route path="/blogs/:id" element={<Blog blogs={blogs} notify={notify} />} />
+          <Route path="/blogs/:id" element={<Blog blogs={blogs} notify={notify} doCreate={handleCreate} />} />
           <Route path="/" element={<Home notify={notify} />} />
         </Routes>
       </Router>
